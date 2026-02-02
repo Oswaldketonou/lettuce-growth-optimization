@@ -58,7 +58,7 @@ The script includes:
 - Export of summary tables  
 
 A polished narrative of the EDA is available in:  
-**`lettuce_eda_narrative.pdf`**
+**`Exploration Data Analysis.pdf`**
 
 ---
 
