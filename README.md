@@ -1,5 +1,6 @@
 # lettuce-growth-optimization
 Data analysis and environmental optimization for lettuce growth in controlled agriculture
+
 # 🌱 Lettuce Growth Optimization: Environmental Drivers & EDA Narrative
 
 ## 📌 Project Overview
@@ -98,4 +99,3 @@ To reproduce the analysis:
 - Build a predictive model for growth days  
 - Add a Tableau dashboard to visualize environmental impacts  
 - Expand feature engineering for more nuanced environmental metrics  
-- Automate the pipeline with R Markdown or targets  
