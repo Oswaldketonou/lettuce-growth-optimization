@@ -1,101 +1,111 @@
-# lettuce-growth-optimization
-Data analysis and environmental optimization for lettuce growth in controlled agriculture
+# 🌱 Lettuce Growth Optimization  
+**Exploratory Data Analysis using R, tidyverse, and ggplot2**
 
-# 🌱 Lettuce Growth Optimization: Environmental Drivers & EDA Narrative
-
-## 📌 Project Overview
-This project explores how environmental conditions influence lettuce growth, using a structured data‑analysis workflow that moves from raw data → cleaning → feature engineering → exploratory data analysis (EDA) → insights.  
-The goal is to identify which environmental factors most strongly affect growth days and to present the findings in a clear, reproducible, and portfolio‑ready format.
-
-This repository includes:
-- A fully commented R script for EDA  
-- A feature‑engineering and cleaning pipeline  
-- Cleaned datasets ready for analysis or dashboarding  
-- A narrative PDF summarizing the EDA in plain language  
-- Supporting summary statistics  
+This project analyzes controlled‑environment lettuce growth data to identify the environmental factors that most influence plant height and biomass.
+The objective is to demonstrate a clear, end‑to‑end analytical workflow and deliver insights that support operational decision‑making in indoor agriculture.
 
 ---
 
-## 📂 Repository Structure
+## 📘 Executive Summary  
+Indoor agriculture depends on precise environmental control to maximize yield. This analysis evaluates how temperature, humidity, watering frequency, and light exposure affect lettuce growth.
+Using R and tidyverse, the dataset was cleaned, validated, and explored through a structured EDA process.
+
+The findings highlight the strongest drivers of growth performance and provide evidence‑based recommendations that can help growers improve consistency, reduce waste, and optimize resource use.
 
 ---
 
-## 🧪 Dataset Description
-The dataset contains environmental measurements and growth outcomes for lettuce plants. Key variables include:
-
-- Temperature metrics (min, max, avg)  
-- Humidity  
-- Light exposure  
-- Watering frequency  
-- Growth days (target variable)  
-
-The raw data required cleaning, type correction, and feature engineering before analysis.
+## 📂 Repository Structure    
+├── data/                 # Raw and cleaned datasets
+├── scripts/              # R scripts for cleaning, EDA, and visualization
+├── docs/                 # Narrative PDF and supporting documentation
+├── visuals/              # Plots generated during EDA
+└── README.md             # Project overview and insights
 
 ---
 
-## 🔧 Workflow Summary
+## 🧹 Data Preparation  
+A reproducible cleaning workflow ensured the dataset was accurate and analysis‑ready:
 
-### 1. Data Cleaning & Feature Engineering
-Performed in the file:  
-`lettuce_cleaning_engineering_pipeline`
+- Removed missing, duplicated, and inconsistent values  
+- Standardized units and variable names  
+- Converted categorical variables into factors  
+- Engineered features such as growth rate and temperature ranges  
+- Validated assumptions and checked for outliers  
 
-Tasks included:
-- Handling missing values  
-- Converting data types  
-- Creating engineered features (e.g., temperature ranges, normalized humidity)  
-- Exporting a clean dataset for analysis  
-
----
-
-### 2. Exploratory Data Analysis (EDA)
-Performed in:  
-`lettuce_exploratory_data_analysis.R`
-
-The script includes:
-- Summary statistics  
-- Distribution checks  
-- Correlation analysis  
-- Visual exploration of environmental drivers  
-- Export of summary tables  
-
-A polished narrative of the EDA is available in:  
-**`Exploration Data Analysis Lettuce Growth.pdf`**
+All steps are documented in the **EDA Narrative PDF**.
 
 ---
 
-## 📊 Key Insights
-A few high‑level findings from the analysis:
+## 🔍 Exploratory Data Analysis  
+The EDA focused on understanding how environmental variables influence growth outcomes. Key components included:
 
-- Certain environmental variables show strong correlation with growth days.  
-- Temperature variability appears to influence growth more than absolute temperature.  
-- Humidity and light exposure interact in ways that affect growth efficiency.  
-- Feature engineering improved interpretability and model‑readiness of the dataset.  
+- Distribution analysis for height and biomass  
+- Temperature and humidity impact assessment  
+- Light exposure thresholds and diminishing returns  
+- Interaction effects between temperature and watering frequency  
+- Correlation analysis across numeric variables  
+- Visualizations created with ggplot2  
 
-(See the narrative PDF for full explanations.)
-
----
-
-## 🔁 Reproducibility
-
-To reproduce the analysis:
-
-1. Clone the repository  
-2. Open `lettuce_environmental_analysis.Rproj` in RStudio  
-3. Run the cleaning pipeline  
-4. Run the EDA script  
-5. Review outputs in the `/data` and `/docs` folders  
+Supporting plots are available in the `visuals/` directory.
 
 ---
 
-## 🛠 Tools & Technologies
-- R (tidyverse, ggplot2, dplyr)  
-- RStudio  
-- CSV-based data workflows  
-- Tableau (optional for dashboarding)  
+## 📈 Key Findings  
+
+### 🌡️ Temperature  
+- The strongest predictor of growth performance  
+- Optimal growth occurred within a defined mid‑range temperature band  
+- Both low and high extremes reduced height and biomass  
+
+### 💡 Light Exposure  
+- Growth improved with increased light up to a saturation point  
+- Additional exposure beyond that point produced minimal benefit  
+
+### 💧 Watering Frequency  
+- Watering interacted with temperature  
+- Overwatering at higher temperatures negatively affected growth  
+
+### 💨 Humidity  
+- Moderate humidity supported more consistent biomass development  
+- Large fluctuations reduced uniformity  
 
 ---
 
-## 🚀 Future Enhancements
-- Build a predictive model for growth days  
-- Add a Tableau dashboard to visualize environmental impacts  
-- Expand feature engineering for more nuanced environmental metrics  
+## 🧭 Recommendations  
+Based on the analysis:
+
+- Maintain temperature within the identified optimal range  
+- Avoid excessive light exposure beyond the saturation threshold  
+- Adjust watering frequency based on temperature conditions  
+- Keep humidity stable within the moderate target band  
+
+These recommendations support improved yield, reduced waste, and more predictable growth cycles.
+
+---
+
+## 📄 Full Analysis  
+A complete narrative, including methodology, visuals, and interpretation, is available here:  
+**`docs/lettuce_growth_EDA_narrative.pdf`**
+
+---
+
+## 🔧 Tools & Technologies  
+| Category | Tools |
+|---------|-------|
+| Programming | R, tidyverse |
+| Visualization | ggplot2 |
+| Documentation | RMarkdown |
+| Version Control | Git & GitHub |
+
+---
+
+## 🚀 Future Enhancements  
+- Develop a predictive model for growth rate  
+- Add time‑series analysis if temporal data becomes available  
+- Build a Shiny dashboard for interactive exploration  
+- Incorporate cost‑efficiency metrics for operational decision‑making  
+
+---
+
+## 👤 About the Analyst  
+Business/Data Analyst with extensive operational leadership experience and a focus on transforming raw data into clear, actionable insights. Skilled in R, SQL, Python, and dashboard development, with a strong emphasis on data storytelling and practical decision support.
