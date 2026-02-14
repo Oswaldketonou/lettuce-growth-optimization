@@ -1,0 +1,299 @@
+---
+title: "Lettuce Growth Optimization: Exploratory Data Analysis Case Study"
+author: "Waldo Ketonou"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  fig.width = 8,
+  fig.height = 5
+)
+
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(corrplot)
+# library(GGally) # optional if you want pair plots later
+
+# Load data (update path or source as needed)
+lettuce <- read_csv("data/lettuce_cleaned_for_analysis.csv")
+
+glimpse(lettuce)
+```
+
+## 1. Business context and objectives
+
+Hydroponic lettuce production is highly sensitive to environmental conditions such as temperature, humidity, nutrient concentration (TDS), and pH. Small deviations from optimal ranges can slow growth, increase variability, and reduce yield.
+
+The goal of this analysis is to:
+
+- **Understand** how environmental conditions behave over time.  
+- **Quantify** relationships between environmental factors and **Growth_Days**.  
+- **Evaluate** a composite **Env_Score** and optimal-condition flags as monitoring tools.  
+- **Generate insights** that can guide operational decisions to improve consistency and time-to-harvest.
+
+This case study focuses on **exploratory data analysis (EDA)** as a foundation for future modeling and optimization.
+
+---
+
+## 2. Data overview
+
+
+```{r data-overview}
+# Basic structure
+glimpse(lettuce)
+
+# Summary of key numeric variables
+lettuce %>%
+  select(where(is.numeric)) %>%
+  summary()
+```
+
+### 2.1 Missing values
+
+
+```{r missing-values}
+lettuce %>%
+  summarise(across(everything(), ~sum(is.na(.)))) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Missing_Count") %>%
+  arrange(desc(Missing_Count))
+```
+missing_summary
+
+
+**Interpretation (example text you can tweak):**  
+Most variables show low or no missing, which supports reliable EDA. Any variables with non‑zero missing counts should be reviewed for data collection issues or imputation strategies in later modeling steps.
+
+---
+
+## 3. Distribution of key variables
+
+### 3.1 Environmental variables
+
+
+```{r dist-environmental, fig.cap="Distribution of raw environmental variables"}
+lettuce %>%
+  select(Temperature, Humidity, TDS_ppm, pH) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Variable",
+               values_to = "Value") %>%
+  ggplot(aes(x = Value)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  facet_wrap(~Variable, scales = "free") +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Raw Environmental Variables",
+    x = "Value",
+    y = "Count"
+  )
+```
+### 3.2 Growth days
+
+
+```{r dist-growth-days, fig.cap="Distribution of Growth_Days"}
+ggplot(lettuce, aes(x = Growth_Days)) +
+  geom_histogram(bins = 30, fill = "darkgreen", color = "white") +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Growth Days",
+    x = "Growth Days",
+    y = "Count"
+  )
+```
+
+**Interpretation (example):**  
+Growth_Days appears to cluster around a central range with some spread, suggesting variability in time-to-harvest that may be partially explained by environmental conditions.
+
+---
+
+## 4. Time-series behavior and rolling averages
+
+
+```{r rolling-averages, fig.cap="Rolling 3-day averages over time"}
+lettuce %>%
+  pivot_longer(cols = ends_with("Roll3"),
+               names_to = "Variable",
+               values_to = "Value") %>%
+  ggplot(aes(x = Date, y = Value, color = Variable)) +
+  geom_line(alpha = 0.7) +
+  theme_minimal() +
+  labs(
+    title = "Rolling 3-Day Averages Over Time",
+    x = "Date",
+    y = "Rolling 3-Day Average"
+  )
+```
+
+**Interpretation (example):**  
+Rolling averages smooth out short-term noise and highlight broader trends or shifts in environmental control. Periods of instability or drift may correspond to operational changes or equipment issues.
+
+---
+
+## 5. Correlation structure
+
+
+```{r correlation-matrix, fig.cap="Correlation matrix of numeric variables"}
+numeric_vars <- lettuce %>%
+  select(where(is.numeric))
+
+cor_matrix <- cor(numeric_vars, use = "complete.obs")
+
+corrplot(cor_matrix,
+         method = "color",
+         type = "upper",
+         tl.cex = 0.7,
+         title = "Correlation Matrix",
+         mar = c(0, 0, 2, 0))
+```
+
+**Interpretation (example):**  
+The correlation matrix reveals how environmental variables relate to each other and to Growth_Days. Strong correlations may indicate redundancy or potential multicollinearity in future models, while weak correlations suggest more independent effects.
+
+---
+
+## 6. Environmental score and growth performance
+
+### 6.1 Env_Score vs Growth_Days
+
+
+```{r envscore-growth, fig.cap="Env_Score vs Growth_Days"}
+ggplot(lettuce, aes(x = Env_Score, y = Growth_Days)) +
+  geom_point(alpha = 0.5, color = "purple") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Env_Score vs Growth_Days",
+    x = "Environmental Score",
+    y = "Growth Days"
+  )
+```
+
+**Interpretation (example):**  
+The trend line provides an initial view of whether better environmental scores are associated with shorter (or longer) Growth_Days. This validates whether Env_Score is a meaningful composite metric for operational monitoring.
+
+---
+
+## 7. Optimal condition flags
+
+### 7.1 Proportion of optimal conditions over time
+
+
+```{r optimal-flags-time, fig.cap="Proportion of optimal conditions over time"}
+lettuce %>%
+  select(Date, Temp_Optimal, Humidity_Optimal, pH_Optimal, TDS_Optimal) %>%
+  pivot_longer(cols = -Date,
+               names_to = "Condition",
+               values_to = "Optimal") %>%
+  ggplot(aes(x = Date, fill = Optimal)) +
+  geom_bar(position = "fill") +
+  facet_wrap(~Condition, ncol = 1) +
+  theme_minimal() +
+  labs(
+    title = "Proportion of Optimal Conditions Over Time",
+    x = "Date",
+    y = "Proportion"
+  )
+```
+
+### 7.2 Distribution of optimal condition scores
+
+
+```{r optimal-score-boxplot, fig.cap="Distribution of optimal condition scores"}
+lettuce %>%
+  select(Temp_Optimal_num, Humidity_Optimal_num, pH_Optimal_num, TDS_Optimal_num) %>%
+  pivot_longer(cols = everything(),
+               names_to = "Condition",
+               values_to = "Score") %>%
+  ggplot(aes(x = Condition, y = Score)) +
+  geom_boxplot(fill = "orange") +
+  theme_minimal() +
+  labs(
+    title = "Distribution of Optimal Condition Scores",
+    x = "Condition",
+    y = "Score"
+  )
+```
+
+**Interpretation (example):**  
+These views show how consistently each environmental factor stays within its optimal range. Conditions with lower median scores or higher variability may be priority targets for process improvement.
+
+---
+
+## 8. Growth patterns by plant
+
+
+```{r growth-density-plant, fig.cap="Growth_Days density by plant"}
+ggplot(lettuce, aes(x = Growth_Days, group = Plant_ID)) +
+  geom_density(alpha = 0.3, fill = "forestgreen") +
+  theme_minimal() +
+  labs(
+    title = "Growth Days Density by Plant",
+    x = "Growth Days",
+    y = "Density"
+  )
+```
+
+**Interpretation (example):**  
+Differences in density curves across plants may indicate variability in genetics, placement, or micro-environmental conditions. This can motivate further investigation into plant-level or zone-level effects.
+
+---
+
+## 9. Summary statistics export for reporting
+
+
+```{r export-summary}
+eda_summary <- lettuce %>%
+  summarise(across(
+    where(is.numeric),
+    list(
+      mean = mean,
+      sd   = sd,
+      min  = min,
+      max  = max
+    ),
+    na.rm = TRUE
+  ))
+```
+eda_summary
+
+# Optional: write to CSV for Tableau or other tools
+# write_csv(eda_summary, "lettuce_eda_summary.csv")
+
+---
+
+## 10. Key insights and next steps
+
+**Key insights (example bullets you can refine):**
+
+- **Environmental stability:** Rolling averages and optimal-condition flags reveal periods of instability that may be driving variability in Growth_Days.  
+- **Composite score validity:** Env_Score shows a visible relationship with Growth_Days, suggesting it is a useful monitoring metric.  
+- **Operational focus areas:** Certain conditions (e.g., TDS or pH) may spend less time in optimal ranges, indicating where process control should be tightened.  
+- **Plant-level variability:** Differences in Growth_Days distributions across plants hint at micro-environmental or placement effects worth exploring.
+
+**Next steps:**
+
+- Build predictive models (e.g., linear regression, tree-based models) using Env_Score and raw environmental variables to predict Growth_Days.  
+- Simulate “what-if” scenarios to estimate the impact of improved environmental control.  
+- Integrate these insights into a dashboard for real-time monitoring and decision support.
+
+---
+
+## 11. Reproducibility
+
+
+```{r session-info}
+sessionInfo()
+```
