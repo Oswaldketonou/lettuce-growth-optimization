@@ -16,9 +16,13 @@ The findings highlight the strongest drivers of growth performance and provide e
 
 ## 📂 Repository Structure    
 ├── data/                 # Raw and cleaned datasets
+
 ├── scripts/              # R scripts for cleaning, EDA, and visualization
+
 ├── docs/                 # Narrative PDF and supporting documentation
+
 ├── visuals/              # Plots generated during EDA
+
 └── README.md             # Project overview and insights
 
 ---
