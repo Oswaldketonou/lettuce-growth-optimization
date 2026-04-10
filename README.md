@@ -1,3 +1,4 @@
+{% include analytics.html %}
 # 🌱 Lettuce Growth Optimization  
 **Exploratory Data Analysis using R, tidyverse, and ggplot2**
 
